@@ -1,10 +1,10 @@
-# 🌦 NOAA Meteorological Data Downloader
+# NOAA Meteorological Data Downloader
 
 This repository includes both **Bash** and **R** scripts to automate downloading meteorological data files from NOAA's [READY archive](https://www.ready.noaa.gov/), with optional integration into a **Google Cloud Storage (GCS)** bucket for the R version.
 
 ---
 
-## 📁 Supported Meteorological Products
+## Supported Meteorological Products
 
 All scripts support the following products:
 
@@ -16,21 +16,22 @@ All scripts support the following products:
 
 ---
 
-## 🧪 Scripts
+## Scripts
 
-### ✅ Bash Version
+### Bash Version
 
 This version supports downloading for range of dates, skipping files already downloaded.
 
 ```bash
-# download_meteo.sh
+#### ./download_meteo.sh
+
 start_date='2024-10-07'   # YYYY-MM-DD
 end_date='2024-10-07'     # YYYY-MM-DD (inclusive)
 meteo_type="nam12"         # Options: 'hrrr', 'nam12', 'gfs0p25'
 savedir="/tmp"            # Local directory to save files
 ```
 
-#### 🔧 Usage
+#### Usage
 
 Make the script executable and run it:
 
@@ -43,7 +44,7 @@ A simplified example for one day and one product is provided in `mwe_download_me
 
 ---
 
-### ✅ R Version
+### R Version
 
 The script will:
 
@@ -55,7 +56,8 @@ The script will:
 
 
 ```r
-# R download setup
+#### ./download_meteo.r
+
 datetime_of_interest <- "2024-06-30 12:24:00"
 met_product <- "nam12"         # "nam12", "gfs0p25", "hrrr"
 full_day_hrrr <- TRUE         # If TRUE and product == "hrrr", get all 4 chunks
@@ -67,7 +69,7 @@ check_bucket_folder <- TRUE   # enable storage in bucket
 ```
 
 
-#### 🔧 Usage
+#### Usage
 
 Executable script using `Rscript`:
 
@@ -77,7 +79,7 @@ Rscript ./download_meteo.r
 
 ---
 
-## ☁️ GCS Bucket Logic (R Only)
+## GCS Bucket Logic (R Only)
 
 When `check_bucket_folder = TRUE`, the R script:
 
@@ -85,7 +87,7 @@ When `check_bucket_folder = TRUE`, the R script:
 2. Falls back to downloading from NOAA if the file is not found.
 3. Uploads new files to GCS if they were downloaded from NOAA.
 
-### 🧰 GCS Setup
+### GCS Setup
 
 To enable this:
 

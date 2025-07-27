@@ -4,18 +4,6 @@ This repository includes both **Bash** and **R** scripts to automate downloading
 
 ---
 
-## Supported Meteorological Products
-
-All scripts support the following products:
-
-| Product   | Description                                       |
-| --------- | ------------------------------------------------- |
-| `nam12`   | North American Mesoscale Model (12 km resolution) |
-| `gfs0p25` | Global Forecast System (0.25° resolution)         |
-| `hrrr`    | High-Resolution Rapid Refresh (3 km resolution)   |
-
----
-
 ## Scripts
 
 ### Bash Version

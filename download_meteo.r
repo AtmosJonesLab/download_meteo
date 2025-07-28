@@ -1,5 +1,5 @@
 # Set the datetime of interest (used to determine which met file(s) to fetch)
-datetime_of_interest <- "2022-06-14 12:24:00"
+datetime_of_interest <- "2022-06-14 16:00:00"
 # Local folder where meteorological data will be stored
 met_folder <- "~/meteo"
 
@@ -77,6 +77,10 @@ for (url in urlArray) {
     BUCKET_FOUND <- FALSE # Flag if file exists in the GCS bucket
 
     filename <- basename(url)  # Extract filename from URL
+    if (met_product == 'hrrr') {
+        ssplit <- strsplit(filename, "_")[[1]]
+        filename <- paste(ssplit[1], substr(ssplit[2], 1, 2), ssplit[3], sep="_")
+    }
 
     # Full local path and GCS bucket path
     local_filename  <- file.path(local_folder, filename)

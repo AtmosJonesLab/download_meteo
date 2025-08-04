@@ -15,7 +15,7 @@ This version supports downloading for range of dates, skipping files already dow
 
 start_date='2024-10-07'   # YYYY-MM-DD
 end_date='2024-10-07'     # YYYY-MM-DD (inclusive)
-meteo_type="nam12"         # Options: 'hrrr', 'nam12', 'gfs0p25'
+meteo_type="nam12"         # Options: 'hrrr', 'nam12', 'gfs0p25', 'gdas'
 savedir="/tmp"            # Local directory to save files
 ```
 

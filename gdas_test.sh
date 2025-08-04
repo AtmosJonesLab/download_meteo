@@ -4,37 +4,47 @@ start_date='2024-10-07'   # YYYY-MM-DD
 end_date='2025-07-30'     # YYYY-MM-DD (inclusive)
 meteo_type="gdal"         # Options: 'hrrr', 'nam12', 'gfs0p25'
 
-echo "$start_date"
-echo "$end_date"
+start_date="${start_date:-$(date +%Y-%m-%d)}"
+end_date="${end_date:-$(date +%Y-%m-%d)}"
 
-get_week_of_month() {
-    local input_date="${1:-$(date +%Y-%m-%d)}"
-
-    # Day of the month (1-31)
-    local day
-    day=$(date -d "$input_date" +%-d)
-
-    # Day of the week for the 1st of that month (0=Sunday..6=Saturday)
-    local first_of_month
-    first_of_month=$(date -d "$(date -d "$input_date" +%Y-%m-01)" +%w)
-
-    # Week of the month (1-based)
-    local week_of_month=$(( (day + first_of_month - 1) / 7 + 1 ))
-
-    echo "$week_of_month"
-}
-
-tmp_date=$start_date
-tmp_week=$(( $(date -d "$tmp_date" +%s) / 604800 ))
+start_week=$(( $(date -d "$start_date" +%s) / 604800 ))
 end_week=$(( $(date -d "$end_date" +%s) / 604800 ))
 
-while [[ $tmp_week -le $end_week ]]; do
-    day=$(date -d "$tmp_date" +%-d)
+# Store the starting month to detect when it changes
+prev_month=$(date -d "$input_date" +%m)
 
-    e_date=$(date -d "$tmp_date" "+%b%y")
-    echo "$tmp_week $tmp_date ${e_date,,}-w$(get_week_of_month $tmp_date)"
-    tmp_date=$(date --date "$tmp_date + 1 week" +"%Y-%m-%d")
-    tmp_week=$(( $(date -d "$tmp_date" +%s) / 604800 ))
+while [[ $start_week -le $end_week ]]; do
+
+    # Day of the month (1-31)
+    day=$(date -d "$start_date" +%-d)
+
+    # Day of the week for the 1st of that month (0=Sunday..6=Saturday)
+    first_of_month=$(date -d "$(date -d "$start_date" +%Y-%m-01)" +%w)
+
+    # Calculate week of the month
+    week_of_month=$(( (day + first_of_month - 1) / 7 + 1 ))
+
+    # Month as 2-digit string
+    curr_month=$(date -d "$start_date" +%m)
+
+    # Short date label (e.g. Oct24)
+    e_date=$(date -d "$start_date" "+%b%y")
+
+    # Print output line
+    echo "$start_week $start_date ${e_date,,}-w$week_of_month"
+
+    # Advance by 1 week
+    start_date=$(date --date "$start_date + 1 week" +"%Y-%m-%d")
+
+    # Check if the month has changed
+    next_month=$(date -d "$start_date" +%m)
+    if [[ "$next_month" != "$curr_month" ]]; then
+        # Set start_date to the 1st of the new month
+        start_date=$(date -d "$start_date" +%Y-%m-01)
+    fi
+
+    # Recalculate start_week for the new start_date
+    start_week=$(( $(date -d "$start_date" +%s) / 604800 ))
 done
 
 

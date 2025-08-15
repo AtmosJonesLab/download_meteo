@@ -44,18 +44,38 @@ if (met_product == "nam12") {
     # Determine hour of day from datetime_of_interest
     hour_of_interest <- as.integer(strftime(datetime_of_interest, format = "%H"))
 
-    # Add relevant HRRR 6-hour chunks, or all if full_day_hrrr is TRUE
-    if (((hour_of_interest >= 0) && (hour_of_interest < 6)) || full_day_hrrr) {
-        urlArray <- c(urlArray, sprintf("https://www.ready.noaa.gov/data/archives/hrrr/%s_00-05_hrrr", dt_string))
-    }
-    if (((hour_of_interest >= 6) && (hour_of_interest < 12)) || full_day_hrrr) {
-        urlArray <- c(urlArray, sprintf("https://www.ready.noaa.gov/data/archives/hrrr/%s_06-11_hrrr", dt_string))
-    }
-    if (((hour_of_interest >= 12) && (hour_of_interest < 18)) || full_day_hrrr) {
-        urlArray <- c(urlArray, sprintf("https://www.ready.noaa.gov/data/archives/hrrr/%s_12-17_hrrr", dt_string))
-    }
-    if (((hour_of_interest >= 18) && (hour_of_interest < 24)) || full_day_hrrr) {
-        urlArray <- c(urlArray, sprintf("https://www.ready.noaa.gov/data/archives/hrrr/%s_18-23_hrrr", dt_string))
+    # HRRR data is stored in two different directories on noaa archives
+    if (dt_string < 20190530 && dt_string > 20150615) {
+        # hrrr_dir <- "hrrr.v1"
+        # Add relevant HRRR 6-hour chunks, or all if full_day_hrrr is TRUE
+        if (((hour_of_interest >= 0) && (hour_of_interest < 6)) || full_day_hrrr) {
+            urlArray <- c(urlArray, sprintf("https://www.ready.noaa.gov/data/archives/hrrr.v1/hysplit.%s.00z.hrrra", dt_string))
+        }
+        if (((hour_of_interest >= 6) && (hour_of_interest < 12)) || full_day_hrrr) {
+            urlArray <- c(urlArray, sprintf("https://www.ready.noaa.gov/data/archives/hrrr.v1/hysplit.%s.06z.hrrra", dt_string))
+        }
+        if (((hour_of_interest >= 12) && (hour_of_interest < 18)) || full_day_hrrr) {
+            urlArray <- c(urlArray, sprintf("https://www.ready.noaa.gov/data/archives/hrrr.v1/hysplit.%s.12z.hrrra", dt_string))
+        }
+        if (((hour_of_interest >= 18) && (hour_of_interest < 24)) || full_day_hrrr) {
+            urlArray <- c(urlArray, sprintf("https://www.ready.noaa.gov/data/archives/hrrr.v1/hysplit.%s.18z.hrrra", dt_string))
+        }
+    } else if (dt_string >= 20190530) {
+        # Add relevant HRRR 6-hour chunks, or all if full_day_hrrr is TRUE
+        if (((hour_of_interest >= 0) && (hour_of_interest < 6)) || full_day_hrrr) {
+            urlArray <- c(urlArray, sprintf("https://www.ready.noaa.gov/data/archives/hrrr/%s_00-05_hrrr", dt_string))
+        }
+        if (((hour_of_interest >= 6) && (hour_of_interest < 12)) || full_day_hrrr) {
+            urlArray <- c(urlArray, sprintf("https://www.ready.noaa.gov/data/archives/hrrr/%s_06-11_hrrr", dt_string))
+        }
+        if (((hour_of_interest >= 12) && (hour_of_interest < 18)) || full_day_hrrr) {
+            urlArray <- c(urlArray, sprintf("https://www.ready.noaa.gov/data/archives/hrrr/%s_12-17_hrrr", dt_string))
+        }
+        if (((hour_of_interest >= 18) && (hour_of_interest < 24)) || full_day_hrrr) {
+            urlArray <- c(urlArray, sprintf("https://www.ready.noaa.gov/data/archives/hrrr/%s_18-23_hrrr", dt_string))
+        }
+    } else {
+        stop(sprintf("date '%s' is not available for hrrr", dt_string))
     }
 
 } else {
@@ -77,9 +97,12 @@ for (url in urlArray) {
     BUCKET_FOUND <- FALSE # Flag if file exists in the GCS bucket
 
     filename <- basename(url)  # Extract filename from URL
-    if (met_product == 'hrrr') {
+    if (met_product == 'hrrr' && dt_string >= 20190530) {
         ssplit <- strsplit(filename, "_")[[1]]
         filename <- paste(ssplit[1], substr(ssplit[2], 1, 2), ssplit[3], sep="_")
+    } else if (met_product == 'hrrr' && dt_string < 20190530 && dt_string > 20150615) {
+        ssplit <- strsplit(filename, "\\.")[[1]]
+        filename <- paste(ssplit[2], substr(ssplit[3], 1, 2), substr(ssplit[4], 1, 4), sep = "_" )
     }
 
     # Full local path and GCS bucket path
